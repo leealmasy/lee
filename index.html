@@ -7,10 +7,19 @@
     <link rel="stylesheet" href="styles.css">
     
     <style>
-    body, body * {
+    body, body *{
+      background-image: url('./moon.webp');
       color: white !important;
+      margin: 0; /* Remove default body margin */
     }
-
+    h1, nav, ul, li, a {
+      color: white;
+      margin: 0; /* Remove default margins */
+    }
+    h1 img {
+      display: block; /* Remove inline spacing */
+      margin: 0; /* Ensure no margin below image */
+    }
        h1 {
       color: white;
       font-size: 36px;
