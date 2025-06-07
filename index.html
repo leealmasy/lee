@@ -1,132 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello world ...  Website of Lee</title>
-    <link rel="stylesheet" href="styles.css">
-    
-    <style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hello world ... Website of Lee</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      margin: 0;
+      background-image: url('./moon.webp');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      color: white;
+      font-family: sans-serif;
+    }
 
-     body, body * {
-            color: white !important;
-        }
+    body, body * {
+      color: white !important;
+    }
+
+    #rainCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
     .link-list li {
-      margin-bottom: 10px; /* Adjust the value (e.g., 10px, 20px) for desired spacing */
-        }
-    </style>
+      margin-bottom: 10px;
+    }
 
+    header, main, footer {
+      padding: 20px;
+    }
+  </style>
 </head>
-<body style="background-image: url('./moon.webp');">
-    <script src="script.js"></script>
-    <canvas id="rainCanvas"></canvas>
-    <script>
-        const canvas = document.getElementById('rainCanvas');
-        const ctx = canvas.getContext('2d');
-
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const raindrops = [];
-        const numRaindrops = 100;
-
-        class Raindrop {
-            constructor() {
-                this.reset();
-            }
-
-            reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.speed = 2 + Math.random() * 3;
-                this.length = 10 + Math.random() * 20;
-                this.width = 1 + Math.random() * 1;
-            }
-
-            update() {
-                this.y += this.speed;
-                if (this.y > canvas.height) {
-                    this.reset();
-                }
-            }
-
-            draw() {
-                ctx.beginPath();
-                ctx.strokeStyle = 'rgba(174, 194, 224, 0.5)';
-                ctx.lineWidth = this.width;
-                ctx.moveTo(this.x, this.y);
-                ctx.lineTo(this.x, this.y + this.length);
-                ctx.stroke();
-            }
-        }
-
-        for (let i = 0; i < numRaindrops; i++) {
-            raindrops.push(new Raindrop());
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            raindrops.forEach(raindrop => {
-                raindrop.update();
-                raindrop.draw();
-            });
-            requestAnimationFrame(animate);
-        }
-
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
-
-        animate();
-    </script>
-    <header>
-        <p style="color: white;">
-        <h1>Hello World ... Welcome to my website ...</h1>
-        
-        <nav>
-            <ul class="link-list">
-                <li><a href="https://leealmasy.github.io/lee/">Home</a></li>
-                <li><a href="https://www.linkedin.com/in/lee-almasy-2728986/">my Linkedin Profile</a></li>
-                <li>Google Colab >  <a href="https://colab.research.google.com/">Google Colab</a></li>
-                <li><a href="./contact.html">Contact</a></li>
-            </ul>
-        </nav>
-        </p>
-    </header>
-    <main>
-        <section id="home">
-            <h2>Home</h2>
-            <p style="color: white;" >LeetCode 150, problems and Pythpn solutions.</p>
-        </section>
-        <section id="about">
-            <h2>About</h2>
-            <p>Learn more about this project and its purpose.</p>
-        </section>
-        <section id="contact">
-            <h2>Contact</h2>
-            <p>Reach out via email: leealmasy@email.com</p>
-        </section>
-        <section id="colab">
-            <h2>Google Colab >  <a href="https://colab.research.google.com/">Google Colab</a></h2>
-        </section>
-        <section id="leetcode">
-            <h2>LeetCode Problems!</h2>
-              <ul class="link-list">
-                <li><a href="https://www.example.com">Example Website</a></li>
-                <li><a href="https://www.google.com">Google</a></li>
-                <li><a href="https://www.wikipedia.org">Wikipedia</a></li>
-                <li><a href="https://www.github.com">GitHub</a></li>
-                <li><a href="https://www.example.com">Colab</a></li>
-
-                <li><a href="https://www.wikipedia.org">Wikipedia</a></li>
-                <li><a href="https://www.github.com">GitHub</a></li>
-              </ul>
-        </section>
-    </main>
-    <footer>
-        <p>© 2025 Lee Almasy's Website. All rights reserved.</p>
-    </footer>
-    
-</body>
-</html>
+<body
