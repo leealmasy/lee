@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rainy Hello World</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        #helloText {
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 48px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            z-index: 2;
+        }
+    </style>
+</head>
+<body>
+    <div id="helloText">Hello World</div>
+    <canvas id="rainCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('rainCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const raindrops = [];
+        const numRaindrops = 100;
+
+        class Raindrop {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * -canvas.height;
+                this.speed = 2 + Math.random() * 3;
+                this.length = 10 + Math.random() * 20;
+                this.width = 1 + Math.random() * 1;
+            }
+
+            update() {
+                this.y += this.speed;
+                if (this.y > canvas.height) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(174, 194, 224, 0.5)';
+                ctx.lineWidth = this.width;
+                ctx.moveTo(this.x, this.y);
+                ctx.lineTo(this.x, this.y + this.length);
+                ctx.stroke();
+            }
+        }
+
+        for (let i = 0; i < numRaindrops; i++) {
+            raindrops.push(new Raindrop());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            raindrops.forEach(raindrop => {
+                raindrop.update();
+                raindrop.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        animate();
+    </script>
+</body>
+</html>
