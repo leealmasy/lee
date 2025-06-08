@@ -5,16 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rainy Hello World</title>
     <style>
-        body, body* {
+        body {
             margin: 0;
-            overflow: hidden;
             background: url('./moon.webp') no-repeat center center fixed;
             background-size: cover;
             height: 50vh;
-            color: white !important;
+            color: white;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
+            position: relative;
+            overflow: hidden;
         }
         canvas {
             position: absolute;
@@ -23,26 +25,43 @@
             z-index: 1;
         }
         #helloText {
-            color: white;
             font-family: Arial, sans-serif;
             font-size: 48px;
             font-weight: bold;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
             z-index: 2;
+            margin: 0;
+        }
+        h2, a {
+            z-index: 2;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        a {
+            text-decoration: none;
+            margin-top: 10px;
+        }
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <p><h1>"Hello World", welcome to my website</h1></p>
-    <h2>Some ome useful links.</h2>
+    <h1 id="helloText">"Hello World", welcome to my website</h1>
+    <h2>Some useful links</h2>
     <a href="https://www.leetcode.com">LeetCode</a>
     <canvas id="rainCanvas"></canvas>
     <script>
         const canvas = document.getElementById('rainCanvas');
         const ctx = canvas.getContext('2d');
 
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight/2;
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight / 2;
+        }
+
+        resizeCanvas();
 
         const raindrops = [];
         const numRaindrops = 100;
@@ -57,7 +76,7 @@
                 this.y = Math.random() * -canvas.height;
                 this.speed = 2 + Math.random() * 3;
                 this.length = 10 + Math.random() * 20;
-                this.width = 1 + Math.random() * 1;
+                this.width = 1 + Math.random();
             }
 
             update() {
@@ -90,10 +109,7 @@
             requestAnimationFrame(animate);
         }
 
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
+        window.addEventListener('resize', resizeCanvas);
 
         animate();
     </script>
