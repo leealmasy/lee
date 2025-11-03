@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complexity Comparison: O(n²) vs O(√n)</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1e293b;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+        
+        .controls {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .control-group label {
+            font-weight: 600;
+            color: #334155;
+            min-width: 150px;
+        }
+        
+        .control-group input[type="range"] {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .value-display {
+            background: #f1f5f9;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-weight: bold;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            position: relative;
+            height: 450px;
+        }
+        
+        .chart-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 15px;
+        }
+        
+        table {
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background: #f1f5f9;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+        
+        th {
+            font-weight: 600;
+            color: #334155;
+        }
+        
+        tbody tr {
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+        
+        .classical { color: #3b82f6; }
+        .quantum { color: #10b981; }
+        .speedup { color: #a855f7; font-weight: 600; }
+        
+        .info-box {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 25px;
+        }
+        
+        .info-box strong {
+            color: #1e40af;
+        }
+        
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Quantum vs Classical Complexity</h1>
+        <p class="subtitle">Comparing O(n²) Classical vs O(√n) Quantum Computing</p>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="maxN">Max Input Size (n):</label>
+                <input type="range" id="maxN" min="10" max="10000" value="100" step="10">
+                <span class="value-display" id="maxNValue">100</span>
+            </div>
+            <div class="control-group">
+                <label for="logScale">Logarithmic Scale:</label>
+                <input type="checkbox" id="logScale">
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <div class="chart-title">Operations vs Input Size</div>
+            <canvas id="mainChart"></canvas>
+        </div>
+        
+        <div class="chart-container">
+            <div class="chart-title">Quantum Speedup Factor</div>
+            <canvas id="speedupChart"></canvas>
+        </div>
+        
+        <div style="overflow-x: auto; margin-bottom: 25px;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Input Size (n)</th>
+                        <th>Classical O(n²)</th>
+                        <th>Quantum O(√n)</th>
+                        <th>Speedup</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+        
+        <div class="info-box">
+            <strong>Key Insight:</strong> Quantum computing provides quadratic speedup for search problems. 
+            As input size grows, the gap widens dramatically - at n=10,000, quantum computing is ~316x faster!
+        </div>
+    </div>
+
+    <script>
+        let mainChart, speedupChart;
+        
+        function generateData(maxN) {
+            const data = [];
+            const step = Math.max(1, Math.floor(maxN / 50));
+            
+            for (let n = 1; n <= maxN; n += step) {
+                data.push({
+                    n: n,
+                    classical: n * n,
+                    quantum: Math.sqrt(n),
+                    speedup: (n * n) / Math.sqrt(n)
+                });
+            }
+            
+            return data;
+        }
+        
+        function updateCharts() {
+            const maxN = parseInt(document.getElementById('maxN').value);
+            const logScale = document.getElementById('logScale').checked;
+            const data = generateData(maxN);
+            
+            const labels = data.map(d => d.n);
+            const classicalData = data.map(d => d.classical);
+            const quantumData = data.map(d => d.quantum);
+            const speedupData = data.map(d => d.speedup);
+            
+            // Main chart
+            if (mainChart) mainChart.destroy();
+            const ctx1 = document.getElementById('mainChart').getContext('2d');
+            mainChart = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Classical O(n²)',
+                            data: classicalData,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.1,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Quantum O(√n)',
+                            data: quantumData,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.1,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: logScale ? 'logarithmic' : 'linear',
+                            title: {
+                                display: true,
+                                text: 'Input Size (n)',
+                                font: { size: 14, weight: 'bold' }
+                            }
+                        },
+                        y: {
+                            type: logScale ? 'logarithmic' : 'linear',
+                            title: {
+                                display: true,
+                                text: 'Operations',
+                                font: { size: 14, weight: 'bold' }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + 
+                                           context.parsed.y.toLocaleString(undefined, {maximumFractionDigits: 2});
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Speedup chart
+            if (speedupChart) speedupChart.destroy();
+            const ctx2 = document.getElementById('speedupChart').getContext('2d');
+            speedupChart = new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Speedup Factor',
+                        data: speedupData,
+                        borderColor: '#a855f7',
+                        backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.1,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Input Size (n)',
+                                font: { size: 14, weight: 'bold' }
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Speedup (x times faster)',
+                                font: { size: 14, weight: 'bold' }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Speedup: ' + 
+                                           context.parsed.y.toLocaleString(undefined, {maximumFractionDigits: 2}) + 'x';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Update table
+            updateTable(maxN);
+        }
+        
+        function updateTable(maxN) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            const sizes = [10, 100, 1000, 10000].filter(n => n <= maxN);
+            
+            sizes.forEach(n => {
+                const classical = n * n;
+                const quantum = Math.sqrt(n);
+                const speedup = classical / quantum;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td style="font-family: monospace;">${n.toLocaleString()}</td>
+                    <td class="classical" style="font-family: monospace;">${classical.toLocaleString()}</td>
+                    <td class="quantum" style="font-family: monospace;">${quantum.toFixed(2)}</td>
+                    <td class="speedup" style="font-family: monospace;">${speedup.toFixed(2)}x</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Event listeners
+        document.getElementById('maxN').addEventListener('input', function(e) {
+            document.getElementById('maxNValue').textContent = e.target.value;
+            updateCharts();
+        });
+        
+        document.getElementById('logScale').addEventListener('change', updateCharts);
+        
+        // Initial render
+        updateCharts();
+    </script>
+</body>
+</html>
